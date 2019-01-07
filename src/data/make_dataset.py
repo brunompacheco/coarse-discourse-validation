@@ -25,7 +25,7 @@ def main(proj_root):
     # Creates DataFrame with each post (of the threads in raw_df) as a line
     print("Creating posts DataFrame - 0%")
     dpproc = pd.DataFrame()
-    for i in range(1, len(raw_df)):
+    for i in range(0, len(raw_df)):
         print("\rCreating posts DataFrame - {0:.2f}%"
               .format(100*i/len(raw_df)))
         thread = raw_df.iloc[i]
