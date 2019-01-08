@@ -23,13 +23,24 @@ def main(proj_root):
     raw_df['is_self_post'] = raw_df['is_self_post'].fillna(0).astype('bool')
 
     # Creates DataFrame with each post (of the threads in raw_df) as a line
-    print("Creating posts DataFrame - 0%")
+    print("Creating posts DataFrame - 0%", end='\r')
     dpproc = pd.DataFrame()
     for i in range(0, len(raw_df)):
-        print("\rCreating posts DataFrame - {0:.2f}%"
-              .format(100*i/len(raw_df)))
+        print("Creating posts DataFrame - {0:.2f}%"
+              .format(100*i/len(raw_df)), end='\r')
         thread = raw_df.iloc[i]
         dposts = pd.DataFrame(thread['posts'])
+
+        dauthor = dposts[dposts['is_first_post'] == True]
+
+        if(len(dauthor) != 1):
+            print("Oops, there is {} first post's".format(len(dauthor)))
+        else:
+            try:
+                dposts['thread_author'] = dauthor.iloc[0]['author']
+            except KeyError:
+                print(dauthor.iloc[0])
+                dposts['thread_author'] = '[deleted author]'
 
         # Replicates threads features
         dposts['is_self_post'] = thread['is_self_post']
@@ -38,7 +49,7 @@ def main(proj_root):
 
         dpproc = pd.concat([dpproc, dposts], ignore_index=True, sort=True)
 
-    print("\rCreating posts DataFrame - Done!")
+    print("Creating posts DataFrame - Done!           ")
 
     total_posts_raw = len(dpproc)
     print("\t{} posts gathered.".format(total_posts_raw))
@@ -61,12 +72,12 @@ def main(proj_root):
     print("Cleaning data - 3/4 steps", end='\r')
 
     # We assume that NaN values at 'author' are deleted accounts
-    dpproc['author'] = dpproc['author'].fillna('deleted')
+    dpproc['author'] = dpproc['author'].fillna('[deleted]')
     print("Cleaning data - Done!")
 
     # Results
     total_posts = len(dpproc)
-    print("Total posts after cleaning: {} ({0:.2f}%)"
+    print("Total posts after cleaning: {} ({:.2f}%)"
           .format(total_posts, 100*total_posts/total_posts_raw))
 
     #   Saving the final DataFrame
