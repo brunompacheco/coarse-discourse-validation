@@ -31,8 +31,11 @@ def main(proj_root):
         thread = raw_df.iloc[i]
         dposts = pd.DataFrame(thread['posts'])
 
-        dauthor = dposts[dposts['is_first_post'] == True]
+        # Adds a column for the total amount of comments in the discussion
+        dposts['comments_in_discussion'] = len(dposts)
 
+        # Adds 'thread_author' column
+        dauthor = dposts[dposts['is_first_post'] == True]
         if(len(dauthor) != 1):
             print("Oops, there is {} first post's".format(len(dauthor)))
         else:
