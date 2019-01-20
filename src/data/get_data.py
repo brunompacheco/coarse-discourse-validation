@@ -53,7 +53,7 @@ def main(proj_root):
     for line in lines:
         thread = json.loads(line)
 
-        print("=Gettin thread: "+thread['title'])
+        print("=Getting thread: "+thread['title'])
 
         submission = reddit.submission(url=thread['url'])
 
