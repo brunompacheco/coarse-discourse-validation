@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import pandas as pd
+from anytree import Node
 from pathlib import Path
 from dotenv import find_dotenv, load_dotenv
 
@@ -49,6 +50,19 @@ def main(proj_root):
         dposts['is_self_post'] = thread['is_self_post']
         dposts['subreddit'] = thread['subreddit']
         dposts['thread_title'] = thread['title']
+        dposts['comments_number'] = len(thread['posts'])
+
+        # Generates features about the discussion tree
+        tree = {}
+        for i in range(0,len(dposts)):
+            row = dposts.iloc[i]
+            try:
+                tree[row['id']] = Node(row['id'], parent=tree[row['in_reply_to']])
+            except KeyError:
+                tree[row['id']] = Node(row['id'])
+                root = tree[row['id']]
+        dposts['branches_number'] = len(root.leaves)
+        dposts['average_branch_length'] = sum([leaf.depth for leaf in root.leaves])/len(root.leaves)
 
         dpproc = pd.concat([dpproc, dposts], ignore_index=True, sort=True)
 
@@ -76,7 +90,7 @@ def main(proj_root):
 
     # We assume that NaN values at 'author' are deleted accounts
     dpproc['author'] = dpproc['author'].fillna('[deleted]')
-    print("Cleaning data - Done!")
+    print("Cleaning data - Done!        ")
 
     # Results
     total_posts = len(dpproc)
