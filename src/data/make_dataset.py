@@ -50,7 +50,8 @@ def main(proj_root):
         dposts['is_self_post'] = thread['is_self_post']
         dposts['subreddit'] = thread['subreddit']
         dposts['thread_title'] = thread['title']
-        dposts['comments_number'] = len(thread['posts'])
+        # it was redundant with 'comments_in_discussion'
+        # dposts['comments_number'] = len(thread['posts'])
 
         # Generates features about the discussion tree
         tree = {}
